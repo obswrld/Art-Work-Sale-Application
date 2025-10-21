@@ -2,9 +2,7 @@ from datetime import datetime
 from enum import Enum
 from sqlalchemy import Column, Integer, String, ForeignKey, Enum as SqlEnum, Float, DateTime
 from sqlalchemy.orm import relationship
-
 from config.config import db
-
 
 class OrderStatus(Enum):
     PAID = "PAID"

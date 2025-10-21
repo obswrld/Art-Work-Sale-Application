@@ -1,10 +1,7 @@
 from datetime import datetime
-
 from sqlalchemy import Column, Integer, String, ForeignKey, Boolean, DateTime, Float
 from sqlalchemy.orm import relationship
-
 from config.config import db
-
 
 class ArtWork(db.Model):
     __tablename__ = 'artwork'
@@ -17,7 +14,6 @@ class ArtWork(db.Model):
     category = Column(String(30), nullable=False)
     is_available = Column(Boolean, nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
-
 
     artist_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     artist = relationship("User", backref="artworks")
