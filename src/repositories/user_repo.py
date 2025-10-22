@@ -3,7 +3,6 @@ from sqlalchemy.exc import IntegrityError
 from config.config import db
 from models.user import User
 
-
 class UserRepository:
     @staticmethod
     def create_user(first_name: str, last_name: str, email: str, role: str, password: str, verification_code: Optional[str] = None) -> User:
