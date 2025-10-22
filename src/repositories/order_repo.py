@@ -1,4 +1,4 @@
-from typing import List, Dict, Any
+from typing import List, Dict, Any, Optional
 from sqlalchemy.exc import IntegrityError
 from config.config import db
 from src.models.order import Order
@@ -38,13 +38,13 @@ class OrderRepository:
         return db.session.query(Order).filter_by(payment_status=payment_status).all()
 
     @staticmethod
-    def update_order(order_id: int, updated_data: Dict[str, Any]) -> Order:
+    def update_order(order_id: int, updated_data: Dict[str, Any]) -> list[Order] | None:
         order = OrderRepository.get_order_by_buyer_id(order_id)
         if not order:
             return None
-        allowed_fields = ["payment_status", "total_price"]
+        allowed_fields = {"payment_status", "total_price"}
         for key, value in updated_data.items():
-            if key not in allowed_fields:
+            if key in allowed_fields:
                 setattr(order, key, value)
         try:
             db.session.commit()
