@@ -8,7 +8,6 @@ def create_app():
     app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///artwork_sales.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SECRET_KEY'] = 'super-secret'
-
     db.init_app(app)
     migrate = Migrate(app, db)
 

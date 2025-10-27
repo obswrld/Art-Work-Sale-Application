@@ -22,7 +22,7 @@ class ArtworkRepository:
             return artwork
         except IntegrityError as e:
             db.session.rollback()
-            raise ValueError("Unable to create new Artwork. Probably invalid artist id or duplicate error.")
+            raise ValueError("Unable to create new Artwork. Probably invalid artist id or duplicate error.") from e
 
     @staticmethod
     def get_artwork_by_id(artwork_id: int) -> Optional[ArtWork]:

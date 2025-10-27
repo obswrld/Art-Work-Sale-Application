@@ -15,6 +15,7 @@ class CreatePaymentSchema(BaseModel):
     order_id: str
     amount: float = Field(..., gt=0)
     payment_method: PaymentMethodSchema
+    payment_status: PaymentStatusSchema
 
 class PaymentResponseSchema(BaseModel):
     payment_id = int

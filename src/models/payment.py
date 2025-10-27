@@ -4,7 +4,6 @@ from config.config import db
 from sqlalchemy import Column, Integer, ForeignKey, Float, Enum as SqlEnum, DateTime
 from sqlalchemy.orm import relationship
 
-
 class PaymentStatus(Enum):
     PENDING = "PENDING"
     SUCCESS = "SUCCESS"
