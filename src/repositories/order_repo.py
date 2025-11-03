@@ -1,4 +1,4 @@
-from typing import List, Dict, Any, Optional
+from typing import List, Dict, Any
 from sqlalchemy.exc import IntegrityError
 from config.config import db
 from src.models.order import Order

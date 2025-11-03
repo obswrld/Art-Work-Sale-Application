@@ -3,7 +3,6 @@ from datetime import datetime
 from config.config import db
 from sqlalchemy.orm import relationship
 
-
 class Cart(db.model):
     __tablename__ = 'cart'
 
