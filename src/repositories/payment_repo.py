@@ -15,6 +15,7 @@ class PaymentRepository:
             )
             db.session.add(payment)
             db.session.commit()
+            db.session.refresh(payment)
             return payment
         except IntegrityError as e:
             db.session.rollback()
@@ -22,10 +23,10 @@ class PaymentRepository:
 
     @staticmethod
     def get_payment_by_id(payment_id: int) -> Optional[Payment]:
-        return db.session.query(Payment).get(payment_id)
+        return db.session.get(Payment, payment_id)
 
     @staticmethod
-    def get_payment_by_order(order_id: int) -> Optional[Payment]:
+    def get_payment_by_order(order_id: int) -> List[Payment]:
         return db.session.query(Payment).filter_by(order_id=order_id).all()
 
     @staticmethod
@@ -41,12 +42,13 @@ class PaymentRepository:
         payment = PaymentRepository.get_payment_by_id(payment_id)
         if not payment:
             return None
-        allowed_fields = ["order_id", "amount", "payment_method", "payment_status"]
+        allowed_fields = {"amount", "payment_status", "payment_method"}
         for key, value in updated_data.items():
             if key in allowed_fields:
                 setattr(payment, key, value)
         try:
             db.session.commit()
+            db.session.refresh(payment)
             return payment
         except IntegrityError as e:
             db.session.rollback()

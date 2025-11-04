@@ -1,3 +1,4 @@
+from typing import Optional
 from sqlalchemy.exc import SQLAlchemyError
 from config.config import db
 from models.artwork import ArtWork
@@ -9,21 +10,22 @@ class CartRepository:
 
     @staticmethod
     def get_cart_or_create_cart(buyer_id: int):
-        cart = Cart.query.filter_by(buyer_id=buyer_id).first()
+        cart = db.session.query(Cart).filter_by(buyer_id=buyer_id).first()
         if not cart:
             cart = Cart(buyer_id=buyer_id)
             db.session.add(cart)
             db.session.commit()
+            db.session.refresh(cart)
         return cart
 
     @staticmethod
-    def add_to_cart(buyer_id: int, artwork_id: int, quantity: int = 1):
+    def add_to_cart(buyer_id: int, artwork_id: int, quantity: int = 1) -> Cart:
         try:
             cart = CartRepository.get_cart_or_create_cart(buyer_id)
-            artwork = ArtWork.query.get(artwork_id)
+            artwork = db.session.get(ArtWork, artwork_id)
             if not artwork:
                 raise ValueError("Artwork not found")
-            cart_item = CartItem.query.filter_by(cart_id=cart.id, artwork_id=artwork_id).first()
+            cart_item = db.session.query(CartItem).filter_by(cart_id=cart.id, artwork_id=artwork_id).first()
             if cart_item:
                 cart_item.quantity += quantity
                 cart_item.subtotal = cart_item.quantity * artwork.price
@@ -36,31 +38,31 @@ class CartRepository:
             return cart
         except SQLAlchemyError as e:
             db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
+            raise RuntimeError(f"Database error {e.__class__.name__} - {str(e)}") from e
 
     @staticmethod
-    def get_cart_by_buyer(buyer_id: int):
-        return Cart.query.filter_by(buyer_id=buyer_id).first()
+    def get_cart_by_buyer(buyer_id: int) -> Optional[Cart]:
+        return db.session.query(Cart).filter_by(buyer_id=buyer_id).first()
 
     @staticmethod
-    def delete_from_cart(card_id: int, artwork_id: int):
+    def remove_from_cart(card_id: int, artwork_id: int) -> bool:
         try:
-            cart_item = Cart.query.filter_by(cart_id=card_id, artwork_id=artwork_id).first()
-            if not cart_item:
-                raise ValueError("Cart-item not found")
-            db.session.delete(cart_item)
+            item = db.session.query(Cart).filter_by(cart_id=card_id, artwork_id=artwork_id).first()
+            if not item:
+                return False
+            db.session.delete(item)
             db.session.commit()
             return True
         except SQLAlchemyError as e:
             db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
+            raise RuntimeError(f"Database error: {e.__class__.__name} - {str(e)}") from e
 
     @staticmethod
     def clear_cart(cart_id: int):
         try:
-            Cart.query.filter_by(cart_id=cart_id).delete()
+            db.session.query(CartItem).filter_by(cart_id=cart_id).delete()
             db.session.commit()
             return True
         except SQLAlchemyError as e:
             db.session.rollback()
-            raise Exception(f"Database error: {str(e)}")
+            raise RuntimeError(f"Database error: {e.__class__.__name__} - {str(e)}") from e
