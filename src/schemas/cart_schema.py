@@ -1,17 +1,26 @@
 from datetime import datetime
 from typing import List
-
 from pydantic import BaseModel
 
 class CartSchema(BaseModel):
     buyer_id: int
 
-class CartResponse(BaseModel):
+class CartItemSchemaResponse(BaseModel):
+    id: int
     cart_id: int
+    artwork_id: int
+    quantity: int
+    subtotal: int
+
+    class Config:
+        from_attributes = True
+
+class CartResponse(BaseModel):
+    id: int
     buyer_id: int
     created_at: datetime
     updated_at: datetime
-    items: List[CartSchema] = []
+    items: List[CartItemSchemaResponse] = []
 
     class Config:
-        from_attribute = True
+        from_attributes = True

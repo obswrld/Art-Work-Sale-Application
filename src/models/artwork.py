@@ -4,7 +4,7 @@ from sqlalchemy.orm import relationship
 from config.config import db
 
 class ArtWork(db.Model):
-    __tablename__ = 'artwork'
+    __tablename__ = 'artworks'
 
     id = Column(Integer, primary_key=True)
     name = Column(String(30), nullable=False)
@@ -12,7 +12,7 @@ class ArtWork(db.Model):
     price = Column(Float, nullable=False)
     description = Column(String(100), nullable=False)
     category = Column(String(30), nullable=False)
-    is_available = Column(Boolean, nullable=False)
+    is_available = Column(Boolean, nullable=False, default=True)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     artist_id = Column(Integer, ForeignKey('users.id'), nullable=False)

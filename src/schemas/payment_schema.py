@@ -12,13 +12,13 @@ class PaymentMethodSchema(str, Enum):
     TRANSFER = "TRANSFER"
 
 class CreatePaymentSchema(BaseModel):
-    order_id: str
+    order_id: int
     amount: float = Field(..., gt=0)
     payment_method: PaymentMethodSchema
     payment_status: PaymentStatusSchema
 
 class PaymentResponseSchema(BaseModel):
-    payment_id = int
+    id = int
     order_id: int
     amount: float
     payment_method: PaymentMethodSchema
@@ -26,4 +26,4 @@ class PaymentResponseSchema(BaseModel):
     created_at: datetime
 
     class Config:
-        from_attribute = True
+        from_attributes = True

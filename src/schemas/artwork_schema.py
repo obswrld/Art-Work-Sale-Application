@@ -23,4 +23,4 @@ class ArtWorkResponse(BaseModel):
     artist_id = int
 
     class Config:
-        from_attribute = True
+        from_attributes = True

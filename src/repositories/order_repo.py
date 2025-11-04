@@ -26,9 +26,9 @@ class OrderRepository:
         return db.session.query(Order).all()
 
     @staticmethod
-    def get_order_by_buyer_id(buyer_id: int) -> List[Order]:
-        return db.session.query(Order).filter_by(buyer_id=buyer_id).all()
-
+    def get_order_by_buyer_id(order_id: int) -> Order:
+        order = db.session.get(Order, order_id)
+        return order
     @staticmethod
     def get_order_by_artwork_id(artwork_id: int) -> List[Order]:
         return db.session.query(Order).filter_by(artwork_id=artwork_id).all()

@@ -3,7 +3,7 @@ from sqlalchemy.orm import relationship
 from config.config import db
 
 class CartItem(db.Model):
-    __tablename__ = 'cart_item'
+    __tablename__ = 'cart_items'
 
     id = Column(Integer, primary_key=True)
     cart_id = Column(Integer, ForeignKey('cart.id'), nullable=False)
@@ -15,4 +15,4 @@ class CartItem(db.Model):
     artwork = relationship("Artwork", backref="cart_items")
 
     def __repr__(self):
-        return f"<Cart-items={self.cart_id} Artwork={self.artwork}>"
+        return f"<Cart-items={self.id}>"

@@ -1,5 +1,4 @@
-from typing import Optional, Dict, Any
-
+from typing import Optional, Dict, Any, List
 from pydantic import EmailStr
 from sqlalchemy.exc import IntegrityError
 from config.config import db
@@ -49,6 +48,10 @@ class UserRepository:
     @staticmethod
     def find_by_verification(code: str) -> Optional[User] | None:
         return db.session.query(User).filter_by(verification_code=code).first()
+
+    @staticmethod
+    def find_all_users() -> List[User]:
+        return db.session.query(User).all()
 
     @staticmethod
     def update_user(user_id: int, updated_data: Dict[str, Any])-> Optional[User]:

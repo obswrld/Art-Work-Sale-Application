@@ -13,11 +13,11 @@ class OrderStatus(Enum):
     CANCELED = "CANCELED"
 
 class Order(db.Model):
-    __tablename__ = "order"
+    __tablename__ = "orders"
 
-    order_id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     buyer_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    artwork_id = Column(Integer, ForeignKey("artworks.id"), nullable=False)
+    artwork_id = Column(Integer, ForeignKey("artwork.id"), nullable=False)
     total_price = Column(Float, nullable=False)
     quantity = Column(Integer, default=1)
     status = Column(SqlEnum(OrderStatus), nullable=False, default=OrderStatus.PENDING)
@@ -27,4 +27,4 @@ class Order(db.Model):
     artwork = relationship("Artwork", backref="orders")
 
     def __repr__(self):
-        return f"<Order {self.order_id}>"
+        return f"<Order {self.id}>"

@@ -1,7 +1,5 @@
 from typing import Optional, List, Dict, Any
-
 from sqlalchemy.exc import IntegrityError
-
 from config.config import db
 from models.payment import Payment
 

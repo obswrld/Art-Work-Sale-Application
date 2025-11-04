@@ -3,11 +3,11 @@ from datetime import datetime
 from config.config import db
 from sqlalchemy.orm import relationship
 
-class Cart(db.model):
-    __tablename__ = 'cart'
+class Cart(db.Model):
+    __tablename__ = 'carts'
 
     cart_id = Column(Integer, primary_key=True)
-    buyer_id = Column(Integer, ForeignKey('user.id'), nullable=False)
+    buyer_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 

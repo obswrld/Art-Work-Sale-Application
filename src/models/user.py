@@ -1,6 +1,6 @@
 from datetime import datetime
 from enum import Enum
-from passlib.handlers.bcrypt import bcrypt
+from passlib.hash import bcrypt
 from sqlalchemy import Column, Integer, String, Boolean, DateTime, Enum as SqlEnum
 from config.config import db
 
@@ -20,7 +20,7 @@ class User(db.Model):
     role = Column(SqlEnum(Role), default=Role.BUYER,  nullable=False)
     is_verified = Column(Boolean, nullable=False, default=False)
     verification_code = Column(String(120), nullable=False, unique=True)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
+    created_at = Column(DateTime, nullable=True, default=datetime.utcnow)
 
     def set_password(self, password: str):
         self.password = bcrypt.hash(password)

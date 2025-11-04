@@ -25,20 +25,20 @@ class ArtworkRepository:
             raise ValueError("Unable to create new Artwork. Probably invalid artist id or duplicate error.") from e
 
     @staticmethod
-    def get_artwork_by_id(artwork_id: int) -> Optional[ArtWork]:
+    def find_by_artwork_id(artwork_id: int) -> Optional[ArtWork]:
         return db.session.query(ArtWork).get(artwork_id)
 
     @staticmethod
-    def get_artwork_by_artist(artist_id: int) -> List[ArtWork]:
+    def find_by_artist_id(artist_id: int) -> List[ArtWork]:
         return db.session.query(ArtWork).filter_by(artist_id=artist_id).all()
 
     @staticmethod
-    def get_all_artworks() -> List[ArtWork]:
-        return db.session.query(ArtWork).all()
+    def find_all_available() -> List[ArtWork]:
+        return db.session.query(ArtWork).filter(ArtWork.is_available == True).all()
 
     @staticmethod
     def update_artwork(artwork_id: int, updated_data: Dict[str, Any]) -> Optional[ArtWork]:
-        artwork = ArtworkRepository.get_artwork_by_id(artwork_id)
+        artwork = ArtworkRepository.find_by_artwork_id(artwork_id)
         if not artwork:
             return None
         allowed_fields = ['name', 'description', 'image_url', 'price', 'category', 'artist_id', 'is_available']
@@ -54,9 +54,12 @@ class ArtworkRepository:
 
     @staticmethod
     def delete_artwork(artwork_id: int) -> bool:
-        artwork = ArtworkRepository.get_artwork_by_id(artwork_id)
+        artwork = ArtworkRepository.find_by_artwork_id(artwork_id)
         if not artwork:
             return False
         db.session.delete(artwork)
         db.session.commit()
         return True
+
+    def find_all_available(self):
+        pass

@@ -25,7 +25,7 @@ class CreateUserSchema(BaseModel):
 
     @staticmethod
     def generate_token():
-        return secrets.token_urlsafe(10)
+        return secrets.token_urlsafe(16)
 
 class LoginUserSchema(BaseModel):
     email: EmailStr

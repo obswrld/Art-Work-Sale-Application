@@ -16,7 +16,7 @@ class PaymentMethod(Enum):
 class Payment(db.Model):
     __tablename__ = "payment"
 
-    payment_id = Column(Integer, primary_key=True)
+    id = Column(Integer, primary_key=True)
     order_id = Column(Integer, ForeignKey("orders.id"), nullable=False)
     amount = Column(Float, nullable=False)
     status = Column(SqlEnum(PaymentStatus), default=PaymentStatus.PENDING, nullable=False)
@@ -26,4 +26,4 @@ class Payment(db.Model):
     order = relationship("Order", backref="payments")
 
     def __repr__(self):
-        return f"<Payment {self.payment_id}>"
+        return f"<Payment {self.id}>"
