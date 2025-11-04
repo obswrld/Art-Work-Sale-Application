@@ -19,6 +19,7 @@ class ArtworkRepository:
             )
             db.session.add(artwork)
             db.session.commit()
+            db.session.refresh(artwork)
             return artwork
         except IntegrityError as e:
             db.session.rollback()
@@ -26,7 +27,7 @@ class ArtworkRepository:
 
     @staticmethod
     def find_by_artwork_id(artwork_id: int) -> Optional[ArtWork]:
-        return db.session.query(ArtWork).get(artwork_id)
+        return db.session.get(ArtWork, artwork_id)
 
     @staticmethod
     def find_by_artist_id(artist_id: int) -> List[ArtWork]:
@@ -34,19 +35,20 @@ class ArtworkRepository:
 
     @staticmethod
     def find_all_available() -> List[ArtWork]:
-        return db.session.query(ArtWork).filter(ArtWork.is_available == True).all()
+        return db.session.query(ArtWork).filter(ArtWork.is_available.is_(True)).all()
 
     @staticmethod
     def update_artwork(artwork_id: int, updated_data: Dict[str, Any]) -> Optional[ArtWork]:
         artwork = ArtworkRepository.find_by_artwork_id(artwork_id)
         if not artwork:
             return None
-        allowed_fields = ['name', 'description', 'image_url', 'price', 'category', 'artist_id', 'is_available']
+        allowed_fields = {'name', 'description', 'image_url', 'price', 'category', 'artist_id', 'is_available'}
         for key, value in updated_data.items():
             if key in allowed_fields:
                 setattr(artwork, key, value)
         try:
             db.session.commit()
+            db.session.refresh(artwork)
             return artwork
         except IntegrityError as e:
             db.session.rollback()
@@ -60,6 +62,3 @@ class ArtworkRepository:
         db.session.delete(artwork)
         db.session.commit()
         return True
-
-    def find_all_available(self):
-        pass
