@@ -27,7 +27,7 @@ class UserService:
         return UserResponseSchema.model_validate(new_user)
 
     def verify_user(self, token: str)-> bool:
-        user = self.repo.find_by_verification(token)
+        user = self.repo.find_by_verification_code(token)
         if not user:
             raise ValueError("Invalid verification Code")
         user.is_verified = True

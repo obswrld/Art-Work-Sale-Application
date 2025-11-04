@@ -6,37 +6,45 @@ from models.user import User
 
 class UserRepository:
     @staticmethod
-    def create_user(first_name: str, last_name: str, email: EmailStr, role: str, password: str, verification_code: Optional[str] = None) -> User:
+    def create_user(first_name: str, last_name: str, email: EmailStr, role: str,
+                    password: str, verification_code: Optional[str] = None) -> User:
         try:
             user = User(
                 first_name=first_name,
                 last_name=last_name,
                 email=email,
                 role=role,
-                password=password,
                 verification_code=verification_code,
             )
             if hasattr(user, "set_password"):
                 user.set_password(password)
             else:
-                user.set_password(password)
+                user.password = password
             db.session.add(user)
             db.session.commit()
+            db.session.refresh(user)
             return user
-        except IntegrityError:
+        except IntegrityError as e:
             db.session.rollback()
-            raise ValueError("A user already exists")
+            raise ValueError("A user already exists")from e
 
     @staticmethod
-    def find_by_email(email: EmailStr) -> User | None:
+    def save(user: User) -> User:
+        db.session.add(user)
+        db.session.commit()
+        db.session.refresh(user)
+        return user
+
+    @staticmethod
+    def find_by_email(email: EmailStr) -> Optional[User]:
         return db.session.query(User).filter_by(email=email).first()
 
     @staticmethod
-    def find_by_user_id(user_id: int) -> User | None:
+    def find_by_user_id(user_id: int) -> Optional[User]:
         return db.session.get(User, user_id)
 
     @staticmethod
-    def verify_user(email:EmailStr) -> Optional[User] | None:
+    def verify_user_by_email(email:EmailStr) -> Optional[User]:
         user = UserRepository.find_by_email(email)
         if not user:
             return None
@@ -46,7 +54,7 @@ class UserRepository:
         return user
 
     @staticmethod
-    def find_by_verification(code: str) -> Optional[User] | None:
+    def find_by_verification_code(code: str) -> Optional[User]:
         return db.session.query(User).filter_by(verification_code=code).first()
 
     @staticmethod
@@ -55,37 +63,32 @@ class UserRepository:
 
     @staticmethod
     def update_user(user_id: int, updated_data: Dict[str, Any])-> Optional[User]:
-        user = UserRepository.get_user_by_id(user_id)
+        user = UserRepository.find_by_user_id(user_id)
         if not user:
             return None
-        allowed_fields = ["first_name", "last_name", "email", "role", "password", "verification_code"]
+        allowed_fields = {"first_name", "last_name", "email", "role", "verification_code"}
         if "password" in updated_data:
             if hasattr(user, "set_password"):
                 user.set_password(updated_data["password"])
             else:
-                user.set_password(updated_data["password"])
+                user.password = updated_data["password"]
             updated_data.pop("password", None)
         for key, value in list(updated_data.items()):
             if key in allowed_fields:
                 setattr(user, key, value)
         try:
             db.session.commit()
+            db.session.refresh(user)
             return user
         except IntegrityError as e:
             db.session.rollback()
-            raise ValueError("Update failed due to data constraint") from e
+            raise ValueError("Update failed due to data constraint (Maybe email already taken)") from e
 
     @staticmethod
     def delete_user(user_id: int) -> bool:
         user = UserRepository.find_by_user_id(user_id)
-        if user:
-            db.session.delete(user)
-            db.session.commit()
-            return True
-        return False
-
-    @staticmethod
-    def save(user: User) -> User:
-        db.session.add(user)
+        if not user:
+            return False
+        db.session.delete(user)
         db.session.commit()
-        return user
+        return True
