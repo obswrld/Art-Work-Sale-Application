@@ -4,10 +4,10 @@ from repositories.user_repo import UserRepository
 
 
 class AdminService:
-    def __init__(self, db):
-        self.user_repo = UserRepository(db)
-        self.order_repo = OrderRepository(db)
-        self.payment_repo = PaymentRepository(db)
+    def __init__(self):
+        self.user_repo = UserRepository()
+        self.payment_repo = PaymentRepository()
+        self.order_repo = OrderRepository()
 
     def get_all_users(self):
         return self.user_repo.find_all_users()

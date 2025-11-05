@@ -1,13 +1,12 @@
 from typing import Optional
 from pydantic import EmailStr
-from models.user import User
 from repositories.user_repo import UserRepository
 from schemas.user_schema import CreateUserSchema, UserResponseSchema, LoginUserSchema
 from passlib.hash import bcrypt
 
 
 class UserService:
-    def __init__(self, db):
+    def __init__(self):
         self.repo = UserRepository()
 
     def register(self, user_data: CreateUserSchema) -> UserResponseSchema:
@@ -16,14 +15,14 @@ class UserService:
             raise ValueError("Email already exists")
         hashed_password = bcrypt.hash(user_data.password)
         verification_token = user_data.generate_token()
-        new_user = User(
+        new_user = self.repo.create_user(
             first_name=user_data.first_name,
             last_name=user_data.last_name,
             email=user_data.email,
+            role=user_data.role,
             password=hashed_password,
             verification_code=verification_token,
         )
-        self.repo.create_user(new_user)
         return UserResponseSchema.model_validate(new_user)
 
     def verify_user(self, token: str)-> bool:
@@ -37,9 +36,7 @@ class UserService:
 
     def login_user(self, login_data: LoginUserSchema) -> UserResponseSchema:
         user = self.repo.find_by_email(login_data.email)
-        if not user:
-            raise ValueError("Invalid email or password")
-        if not bcrypt.verify(login_data.password, user.password):
+        if not user or not bcrypt.verify(login_data.password, user.password):
             raise ValueError("Invalid email or password")
         if not user.is_verified:
             raise ValueError("Please verify your email")
@@ -58,20 +55,10 @@ class UserService:
         return UserResponseSchema.model_validate(user)
 
     def update_user(self, user_id: int, update_data: dict)-> UserResponseSchema:
-        user = self.repo.find_by_user_id(user_id)
-        if not user:
-            raise ValueError("User does not exist")
-
-        for key, value in update_data.items():
-            if hasattr(user, key):
-                setattr(user, key, value)
-
-        self.repo.save(user)
-        return UserResponseSchema.model_validate(user)
+        updated_user = self.repo.update_user(user_id, update_data)
+        if not updated_user:
+            raise ValueError("User does not exist or updates failed")
+        return UserResponseSchema.model_validate(updated_user)
 
     def delete_user(self, user_id: int)-> bool:
-        user = self.repo.find_by_user_id(user_id)
-        if not user:
-            raise ValueError("User does not exist")
-        self.repo.delete_user(user)
-        return True
+        return self.repo.delete_user(user_id)
