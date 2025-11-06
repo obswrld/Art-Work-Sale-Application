@@ -1,7 +1,7 @@
 from typing import List, Dict, Any, Optional
 from sqlalchemy.exc import IntegrityError
 from config.config import db
-from src.models.order import Order
+from models import Order
 
 class OrderRepository:
     @staticmethod

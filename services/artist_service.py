@@ -1,4 +1,4 @@
-from repositories.artwork_repo import ArtworkRepository
+from repositories import ArtworkRepository
 
 class ArtworkService:
     def __init__(self, artist_id: int):

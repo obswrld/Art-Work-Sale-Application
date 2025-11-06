@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlalchemy.exc import SQLAlchemyError
 from config.config import db
-from models.artwork import ArtWork
+from models import ArtWork
 from models.cart import Cart
 from models.cart_item import CartItem
 

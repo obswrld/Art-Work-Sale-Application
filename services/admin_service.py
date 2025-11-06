@@ -1,6 +1,6 @@
 from repositories.order_repo import OrderRepository
-from repositories.payment_repo import PaymentRepository
-from repositories.user_repo import UserRepository
+from repositories import PaymentRepository
+from repositories import UserRepository
 
 
 class AdminService:

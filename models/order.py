@@ -17,7 +17,7 @@ class Order(db.Model):
 
     id = Column(Integer, primary_key=True)
     buyer_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    artwork_id = Column(Integer, ForeignKey("artwork.id"), nullable=False)
+    artwork_id = Column(Integer, ForeignKey("artworks.id"), nullable=False)
     total_price = Column(Float, nullable=False)
     quantity = Column(Integer, default=1)
     status = Column(SqlEnum(OrderStatus), nullable=False, default=OrderStatus.PENDING)

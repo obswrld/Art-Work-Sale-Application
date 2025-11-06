@@ -12,7 +12,7 @@ class Cart(db.Model):
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
     buyer = relationship("User", "carts")
-    item = relationship("CartItem", "carts", cascade="all, delete-orphan")
+    item = relationship("CartItem", "cart", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Cart {self.cart_id}>"
