@@ -1,18 +1,19 @@
 from typing import List, Dict, Any, Optional
 from sqlalchemy.exc import IntegrityError
 from config.config import db
-from models import Order
+from models.order import Order, OrderStatus
+
 
 class OrderRepository:
     @staticmethod
-    def create_order(buyer_id: int, artwork_id: int, quantity: int, total_price: float, payment_status: str = "pending") -> Order:
+    def create_order(buyer_id: int, artwork_id: int, quantity: int, total_price: float, status: OrderStatus = OrderStatus.PENDING) -> Order:
         try:
             order = Order(
                 buyer_id=buyer_id,
                 artwork_id=artwork_id,
                 quantity=quantity,
                 total_price=total_price,
-                payment_status=payment_status
+                status=status,
             )
             db.session.add(order)
             db.session.commit()
@@ -40,15 +41,15 @@ class OrderRepository:
         return db.session.query(Order).filter_by(artwork_id=artwork_id).all()
 
     @staticmethod
-    def get_order_by_payment_status(payment_status: str) -> List[Order]:
-        return db.session.query(Order).filter_by(payment_status=payment_status).all()
+    def get_order_by_order_status(status: OrderStatus) -> List[Order]:
+        return db.session.query(Order).filter_by(status=status).all()
 
     @staticmethod
-    def update_order(order_id: int, updated_data: Dict[str, Any]) -> list[Order] | None:
+    def update_order(order_id: int, updated_data: Dict[str, Any]) -> Optional[Order]:
         order = OrderRepository.get_orders_by_id(order_id)
         if not order:
             return None
-        allowed_fields = {"payment_status", "total_price", "quantity"}
+        allowed_fields = {"status", "total_price", "quantity"}
         for key, value in updated_data.items():
             if key in allowed_fields:
                 setattr(order, key, value)

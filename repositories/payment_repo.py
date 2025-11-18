@@ -1,11 +1,12 @@
 from typing import Optional, List, Dict, Any
 from sqlalchemy.exc import IntegrityError
 from config.config import db
-from models.payment import Payment
+from models.payment import Payment, PaymentStatus
+
 
 class PaymentRepository:
     @staticmethod
-    def create_payment(order_id: int, amount: float, payment_method: str="pending", payment_status: str="pending") -> Payment:
+    def create_payment(order_id: int, amount: float, payment_method, payment_status: PaymentStatus = PaymentStatus.PENDING) -> Payment:
         try:
             payment = Payment(
                 order_id=order_id,
@@ -34,7 +35,7 @@ class PaymentRepository:
         return db.session.query(Payment).all()
 
     @staticmethod
-    def get_payment_by_status(payment_status: str) -> List[Payment]:
+    def get_payment_by_status(payment_status: PaymentStatus) -> List[Payment]:
         return db.session.query(Payment).filter_by(payment_status=payment_status).all()
 
     @staticmethod

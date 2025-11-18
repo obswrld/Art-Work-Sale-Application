@@ -15,7 +15,7 @@ class CreatePaymentSchema(BaseModel):
     order_id: int
     amount: float = Field(..., gt=0)
     payment_method: PaymentMethodSchema
-    payment_status: PaymentStatusSchema
+    payment_status: PaymentStatusSchema = PaymentStatusSchema.PENDING
 
 class PaymentResponseSchema(BaseModel):
     id = int

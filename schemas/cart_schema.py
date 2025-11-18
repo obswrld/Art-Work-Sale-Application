@@ -10,7 +10,7 @@ class CartItemSchemaResponse(BaseModel):
     cart_id: int
     artwork_id: int
     quantity: int
-    subtotal: int
+    subtotal: float
 
     class Config:
         from_attributes = True

@@ -1,7 +1,7 @@
 from typing import Optional
 from sqlalchemy.exc import SQLAlchemyError
 from config.config import db
-from models import ArtWork
+from models.artwork import ArtWork
 from models.cart import Cart
 from models.cart_item import CartItem
 
@@ -38,7 +38,7 @@ class CartRepository:
             return cart
         except SQLAlchemyError as e:
             db.session.rollback()
-            raise RuntimeError(f"Database error {e.__class__.name__} - {str(e)}") from e
+            raise RuntimeError(f"Database error {e.__class__.__name__} - {str(e)}") from e
 
     @staticmethod
     def get_cart_by_buyer(buyer_id: int) -> Optional[Cart]:
@@ -55,7 +55,7 @@ class CartRepository:
             return True
         except SQLAlchemyError as e:
             db.session.rollback()
-            raise RuntimeError(f"Database error: {e.__class__.__name} - {str(e)}") from e
+            raise RuntimeError(f"Database error: {e.__class__.__name__} - {str(e)}") from e
 
     @staticmethod
     def clear_cart(cart_id: int):
