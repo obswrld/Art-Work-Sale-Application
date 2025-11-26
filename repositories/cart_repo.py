@@ -25,14 +25,26 @@ class CartRepository:
             artwork = db.session.get(ArtWork, artwork_id)
             if not artwork:
                 raise ValueError("Artwork not found")
-            cart_item = db.session.query(CartItem).filter_by(cart_id=cart.id, artwork_id=artwork_id).first()
+
+            # FIXED: Changed cart.id to cart.cart_id
+            cart_item = db.session.query(CartItem).filter_by(
+                cart_id=cart.cart_id,
+                artwork_id=artwork_id
+            ).first()
+
             if cart_item:
                 cart_item.quantity += quantity
                 cart_item.subtotal = cart_item.quantity * artwork.price
             else:
                 subtotal = artwork.price * quantity
-                new_item = CartItem(cart_id=cart.id, artwork_id=artwork_id, quantity=quantity, subtotal=subtotal)
+                new_item = CartItem(
+                    cart_id=cart.cart_id,
+                    artwork_id=artwork_id,
+                    quantity=quantity,
+                    subtotal=subtotal
+                )
                 db.session.add(new_item)
+
             db.session.commit()
             db.session.refresh(cart)
             return cart
@@ -45,9 +57,12 @@ class CartRepository:
         return db.session.query(Cart).filter_by(buyer_id=buyer_id).first()
 
     @staticmethod
-    def remove_from_cart(card_id: int, artwork_id: int) -> bool:
+    def remove_from_cart(cart_id: int, artwork_id: int) -> bool:
         try:
-            item = db.session.query(Cart).filter_by(cart_id=card_id, artwork_id=artwork_id).first()
+            item = db.session.query(CartItem).filter_by(
+                cart_id=cart_id,
+                artwork_id=artwork_id
+            ).first()
             if not item:
                 return False
             db.session.delete(item)

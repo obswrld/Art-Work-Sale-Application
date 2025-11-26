@@ -1,4 +1,4 @@
-from repositories import ArtworkRepository
+from repositories.artwork_repo import ArtworkRepository
 from repositories.order_repo import OrderRepository
 
 

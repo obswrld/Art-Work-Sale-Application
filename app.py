@@ -1,6 +1,6 @@
 from flask import Flask
 from flask_migrate import Migrate
-from config.config import db
+from config import db
 
 def create_app():
     app = Flask(__name__)

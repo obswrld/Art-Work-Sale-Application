@@ -1,4 +1,4 @@
-from repositories.order_repo import OrderRepository
+from repositories import OrderRepository
 from repositories import PaymentRepository
 from repositories import UserRepository
 

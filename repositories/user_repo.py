@@ -26,7 +26,7 @@ class UserRepository:
             return user
         except IntegrityError as e:
             db.session.rollback()
-            raise ValueError("A user already exists")from e
+            raise ValueError("A user already exists") from e
 
     @staticmethod
     def save(user: User) -> User:
@@ -44,7 +44,7 @@ class UserRepository:
         return db.session.get(User, user_id)
 
     @staticmethod
-    def verify_user_by_email(email:EmailStr) -> Optional[User]:
+    def verify_user_by_email(email: EmailStr) -> Optional[User]:
         user = UserRepository.find_by_email(email)
         if not user:
             return None
@@ -62,7 +62,7 @@ class UserRepository:
         return db.session.query(User).all()
 
     @staticmethod
-    def update_user(user_id: int, updated_data: Dict[str, Any])-> Optional[User]:
+    def update_user(user_id: int, updated_data: Dict[str, Any]) -> Optional[User]:
         user = UserRepository.find_by_user_id(user_id)
         if not user:
             return None

@@ -6,7 +6,8 @@ from models.order import Order, OrderStatus
 
 class OrderRepository:
     @staticmethod
-    def create_order(buyer_id: int, artwork_id: int, quantity: int, total_price: float, status: OrderStatus = OrderStatus.PENDING) -> Order:
+    def create_order(buyer_id: int, artwork_id: int, quantity: int, total_price: float,
+                     status: OrderStatus = OrderStatus.PENDING) -> Order:
         try:
             order = Order(
                 buyer_id=buyer_id,
@@ -21,7 +22,7 @@ class OrderRepository:
             return order
         except IntegrityError as e:
             db.session.rollback()
-            raise ValueError("Failed to create order. Invalid buyer_id or artwork_id.")from e
+            raise ValueError("Failed to create order. Invalid buyer_id or artwork_id.") from e
 
     @staticmethod
     def get_all_orders() -> List[Order]:

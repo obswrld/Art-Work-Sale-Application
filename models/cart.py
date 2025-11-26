@@ -11,8 +11,8 @@ class Cart(db.Model):
     created_at = Column(DateTime, default=datetime.utcnow)
     updated_at = Column(DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
 
-    buyer = relationship("User", "carts")
-    item = relationship("CartItem", "cart", cascade="all, delete-orphan")
+    buyer = relationship("User", backref="carts")
+    items = relationship("CartItem", backref="cart", cascade="all, delete-orphan")
 
     def __repr__(self):
         return f"<Cart {self.cart_id}>"
