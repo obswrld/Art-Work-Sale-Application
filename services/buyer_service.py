@@ -1,7 +1,6 @@
 from repositories.artwork_repo import ArtworkRepository
 from repositories.order_repo import OrderRepository
 
-
 class BuyerService:
     def __init__(self, user_id: int):
         self.artwork_repo = ArtworkRepository()
