@@ -90,3 +90,19 @@ def test_browse_artwork_success(mock_artwork_repo, buyer_service, sample_artwork
     assert result[2].name == "Portrait"
     assert all(artwork.is_available for artwork in result)
     mock_artwork_repo.find_all_available.assert_called_once()
+
+def test_browse_artwork_empty_list(mock_artwork_repo, buyer_service):
+    mock_artwork_repo.find_all_available.return_value = []
+    result = buyer_service.browse_artwork()
+    assert result == []
+    assert len(result) == 0
+    mock_artwork_repo.find_all_available.assert_called_once()
+
+def test_browser_artwork_single_item(mock_artwork_repo, buyer_service, sample_artworks):
+    mock_artwork_repo.find_all_available.return_value = [sample_artworks[0]]
+    result = buyer_service.browse_artwork()
+    assert len(result) == 1
+    assert result[0].name == "Sunset Painting"
+    assert result[0].price == 150.00
+    assert result[0].is_available is True
+    mock_artwork_repo.find_all_available.assert_called_once()
