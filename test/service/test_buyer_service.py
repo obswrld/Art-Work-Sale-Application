@@ -1,7 +1,8 @@
 import pytest
-from unittest.mock import MagicMock
+from unittest.mock import MagicMock, patch
 from datetime import datetime
 from repositories.artwork_repo import ArtworkRepository
+from repositories.order_repo import OrderRepository
 from services.buyer_service import BuyerService
 from models.order import OrderStatus
 
@@ -110,7 +111,51 @@ def test_browser_artwork_single_item(mock_artwork_repo, buyer_service, sample_ar
 def test_browser_artwork_verifies_prices(mock_artwork_repo, buyer_service, sample_artworks):
     mock_artwork_repo.find_all_available.return_value = sample_artworks
     result = buyer_service.browse_artwork()
+    assert result[0].price == 150.00
+    assert result[1].price == 300.00
+    assert result[2].price == 500.00
+    mock_artwork_repo.find_all_available.assert_called_once()
+
+def test_browser_artwork_verify_categories(mock_artwork_repo, buyer_service, sample_artworks):
+    mock_artwork_repo.find_all_available.return_value = sample_artworks
+    result = buyer_service.browse_artwork()
     assert result[0].category == "Painting"
     assert result[1].category == "Abstract"
     assert result[2].category == "Portrait"
     mock_artwork_repo.find_all_available.assert_called_once()
+
+def test_browser_artwork_verifies_artist_id(mock_artwork_repo, buyer_service, sample_artworks):
+    mock_artwork_repo.find_all_available.return_value = sample_artworks
+    result = buyer_service.browse_artwork()
+    assert result[0].artist_id == 10
+    assert result[1].artist_id == 11
+    assert result[2].artist_id == 12
+    mock_artwork_repo.find_all_available.assert_called_once()
+
+def test_place_order_success(buyer_service, sample_artworks, sample_order):
+    artwork = sample_artworks[0]
+    with patch.object(ArtworkRepository, "find_by_artwork_id", return_value=artwork):
+        with patch.object(OrderRepository, "create_order", return_value=sample_order):
+            result = buyer_service.place_order(artwork_id=1, quantity=1)
+    assert result.id == 1
+    assert result.buyer_id == 1
+    assert result.artwork_id == 1
+    assert result.quantity == 1
+    assert result.total_price == 150.00
+    assert result.status == OrderStatus.PENDING
+
+def test_place_order_multiple_quantity(buyer_service, sample_artworks):
+    artwork = sample_artworks[0]
+    order = MagicMock()
+    order.id = 1
+    order.buyer_id = 1
+    order.artwork_id = 1
+    order.quantity = 3
+    order.total_price = 450.00
+    order.status = OrderStatus.PENDING
+    order.created_at = datetime.now()
+    with patch.object(ArtworkRepository, "find_by_artwork_id", return_value=artwork):
+        with patch.object(OrderRepository, "create_order", return_value=order):
+            result = buyer_service.place_order(artwork_id=1, quantity=3)
+    assert result.quantity == 3
+    assert result.total_price == 450.00
