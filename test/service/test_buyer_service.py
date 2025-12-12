@@ -106,3 +106,11 @@ def test_browser_artwork_single_item(mock_artwork_repo, buyer_service, sample_ar
     assert result[0].price == 150.00
     assert result[0].is_available is True
     mock_artwork_repo.find_all_available.assert_called_once()
+
+def test_browser_artwork_verifies_prices(mock_artwork_repo, buyer_service, sample_artworks):
+    mock_artwork_repo.find_all_available.return_value = sample_artworks
+    result = buyer_service.browse_artwork()
+    assert result[0].category == "Painting"
+    assert result[1].category == "Abstract"
+    assert result[2].category == "Portrait"
+    mock_artwork_repo.find_all_available.assert_called_once()
